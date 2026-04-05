@@ -18,7 +18,7 @@
                 "tags": [
                     "system"
                 ],
-                "summary": "Health check 1-2-1-2",
+                "summary": "Health check",
                 "responses": {
                     "200": {
                         "description": "OK",
