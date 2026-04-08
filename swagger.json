@@ -158,12 +158,7 @@
         },
         "/api/settings/{key}": {
             "get": {
-                "security": [
-                    {
-                        "CookieAuth": []
-                    }
-                ],
-                "description": "Returns a single setting by key.",
+                "description": "Returns a single setting by key. Authentication is not required when setup_complete is false, allowing the frontend to check setup status before any user exists.",
                 "produces": [
                     "application/json"
                 ],
