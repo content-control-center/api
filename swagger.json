@@ -314,6 +314,73 @@
                 }
             }
         },
+        "/api/campaigns/{id}/generate-draft": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Calls the AI content plan flow and streams progress via Server-Sent Events.\nEach step emits an SSE event of type \"step\" with payload {\"step\":\"\u003cname\u003e\",\"status\":\"done\"}.\nOn success a final \"complete\" event carries the full ContentPlanResponse payload.\nOn failure an \"error\" event carries {\"message\":\"\u003ctext\u003e\",\"code\":\u003chttp_code\u003e}.",
+                "produces": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "campaigns"
+                ],
+                "summary": "Generate draft posts (SSE)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Campaign Sqid",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "SSE stream: step / complete / error events"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/content-bank/pieces": {
             "get": {
                 "security": [
@@ -2040,10 +2107,10 @@
                 "target_persona": {
                     "type": "string"
                 },
-                "target_platform_ids": {
+                "target_platforms": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/models.CampaignPlatform"
                     }
                 },
                 "tone_guidelines": {
@@ -2116,6 +2183,12 @@
                 "name"
             ],
             "properties": {
+                "cadence": {
+                    "type": "string"
+                },
+                "constraints": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -2292,6 +2365,12 @@
                         "type": "string"
                     }
                 },
+                "platforms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Platform"
+                    }
+                },
                 "start_date": {
                     "type": "string"
                 },
@@ -2318,10 +2397,10 @@
                 "target_persona": {
                     "type": "string"
                 },
-                "target_platform_ids": {
+                "target_platforms": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/models.CampaignPlatform"
                     }
                 },
                 "tone_guidelines": {
@@ -2349,6 +2428,20 @@
                 "ObjectiveConversion",
                 "ObjectiveRetention"
             ]
+        },
+        "models.CampaignPlatform": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "post_types": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
         },
         "models.CampaignStatus": {
             "type": "string",
@@ -2407,6 +2500,12 @@
         "models.Platform": {
             "type": "object",
             "properties": {
+                "cadence": {
+                    "type": "string"
+                },
+                "constraints": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
