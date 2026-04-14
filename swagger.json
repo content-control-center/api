@@ -6,9 +6,563 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:3000",
+    "host": "localhost:9001",
     "basePath": "/",
     "paths": {
+        "/api/campaign_types": {
+            "get": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Returns all campaign types with their phases ordered by name.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign_types"
+                ],
+                "summary": "List campaign types",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.CampaignType"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Creates a new user-defined campaign type without phases.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign_types"
+                ],
+                "summary": "Create campaign type",
+                "parameters": [
+                    {
+                        "description": "CampaignType payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.campaignTypeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.CampaignType"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/campaign_types/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Returns a single campaign type with its phases by ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign_types"
+                ],
+                "summary": "Get campaign type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "CampaignType ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CampaignType"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Updates name, label, and description of a user-created campaign type. System types cannot be modified.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign_types"
+                ],
+                "summary": "Update campaign type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "CampaignType ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "CampaignType payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.campaignTypeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CampaignType"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Deletes a user-created campaign type and all its phases. System types cannot be deleted.",
+                "tags": [
+                    "campaign_types"
+                ],
+                "summary": "Delete campaign type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "CampaignType ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/campaign_types/{id}/clone": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Creates a new user-defined campaign type by deep-copying an existing type and all its phases.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign_types"
+                ],
+                "summary": "Clone campaign type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Source CampaignType ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Name and label for the clone",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.cloneCampaignTypeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.CampaignType"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/campaign_types/{id}/phases": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Adds a new phase to a campaign type.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign_types"
+                ],
+                "summary": "Add phase to campaign type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "CampaignType ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Phase payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.campaignTypePhaseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.CampaignTypePhase"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/campaign_types/{id}/phases/{phase_id}": {
+            "put": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Updates a phase within a campaign type.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaign_types"
+                ],
+                "summary": "Update phase",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "CampaignType ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Phase ID",
+                        "name": "phase_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Phase payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.campaignTypePhaseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CampaignTypePhase"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Deletes a phase from a campaign type.",
+                "tags": [
+                    "campaign_types"
+                ],
+                "summary": "Delete phase",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "CampaignType ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Phase ID",
+                        "name": "phase_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/campaigns": {
             "get": {
                 "security": [
@@ -2089,12 +2643,15 @@
         "handlers.campaignRequest": {
             "type": "object",
             "required": [
-                "name",
-                "objective"
+                "campaign_type_id",
+                "name"
             ],
             "properties": {
                 "budget": {
                     "type": "number"
+                },
+                "campaign_type_id": {
+                    "type": "string"
                 },
                 "currency": {
                     "type": "string"
@@ -2116,9 +2673,6 @@
                 },
                 "name": {
                     "type": "string"
-                },
-                "objective": {
-                    "$ref": "#/definitions/models.CampaignObjective"
                 },
                 "pieces_ids": {
                     "type": "array",
@@ -2152,6 +2706,57 @@
                 },
                 "use_pieces": {
                     "type": "boolean"
+                }
+            }
+        },
+        "handlers.campaignTypePhaseRequest": {
+            "type": "object",
+            "required": [
+                "name",
+                "sequence"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "purpose": {
+                    "type": "string"
+                },
+                "sequence": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handlers.campaignTypeRequest": {
+            "type": "object",
+            "required": [
+                "label",
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.cloneCampaignTypeRequest": {
+            "type": "object",
+            "required": [
+                "label",
+                "name"
+            ],
+            "properties": {
+                "label": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
@@ -2241,6 +2846,9 @@
             ],
             "properties": {
                 "campaign_id": {
+                    "type": "string"
+                },
+                "campaign_type_phase_id": {
                     "type": "string"
                 },
                 "content": {
@@ -2359,6 +2967,12 @@
                 "budget": {
                     "type": "number"
                 },
+                "campaign_type": {
+                    "$ref": "#/definitions/models.CampaignType"
+                },
+                "campaign_type_id": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -2389,9 +3003,6 @@
                 },
                 "name": {
                     "type": "string"
-                },
-                "objective": {
-                    "$ref": "#/definitions/models.CampaignObjective"
                 },
                 "pieces_ids": {
                     "type": "array",
@@ -2448,21 +3059,6 @@
                 }
             }
         },
-        "models.CampaignObjective": {
-            "type": "string",
-            "enum": [
-                "awareness",
-                "engagement",
-                "conversion",
-                "retention"
-            ],
-            "x-enum-varnames": [
-                "ObjectiveAwareness",
-                "ObjectiveEngagement",
-                "ObjectiveConversion",
-                "ObjectiveRetention"
-            ]
-        },
         "models.CampaignPlatform": {
             "type": "object",
             "properties": {
@@ -2495,6 +3091,52 @@
                 "StatusCompleted",
                 "StatusArchived"
             ]
+        },
+        "models.CampaignType": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_system": {
+                    "type": "boolean"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phases": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CampaignTypePhase"
+                    }
+                }
+            }
+        },
+        "models.CampaignTypePhase": {
+            "type": "object",
+            "properties": {
+                "campaign_type_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "purpose": {
+                    "type": "string"
+                },
+                "sequence": {
+                    "type": "integer"
+                }
+            }
         },
         "models.Piece": {
             "type": "object",
@@ -2569,6 +3211,12 @@
                     ]
                 },
                 "campaign_id": {
+                    "type": "string"
+                },
+                "campaign_type_phase": {
+                    "$ref": "#/definitions/models.CampaignTypePhase"
+                },
+                "campaign_type_phase_id": {
                     "type": "string"
                 },
                 "content": {
