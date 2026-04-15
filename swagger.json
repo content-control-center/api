@@ -662,7 +662,7 @@
                         "CookieAuth": []
                     }
                 ],
-                "description": "Returns all posts for the given campaign ID, with campaign, platform, and pieces hydrated.",
+                "description": "Returns all posts for the given campaign ID, with campaign, platform, and assets hydrated.",
                 "produces": [
                     "application/json"
                 ],
@@ -935,28 +935,28 @@
                 }
             }
         },
-        "/api/content-bank/pieces": {
+        "/api/content-bank/assets": {
             "get": {
                 "security": [
                     {
                         "CookieAuth": []
                     }
                 ],
-                "description": "Returns all content bank pieces ordered by creation date.",
+                "description": "Returns all content bank assets ordered by creation date.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "content-bank"
                 ],
-                "summary": "List pieces",
+                "summary": "List assets",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Piece"
+                                "$ref": "#/definitions/models.Asset"
                             }
                         }
                     },
@@ -977,7 +977,7 @@
                         "CookieAuth": []
                     }
                 ],
-                "description": "Creates a new content bank piece. The created_by field is set from the authenticated session.",
+                "description": "Creates a new content bank asset. The created_by field is set from the authenticated session.",
                 "consumes": [
                     "application/json"
                 ],
@@ -987,15 +987,15 @@
                 "tags": [
                     "content-bank"
                 ],
-                "summary": "Create piece",
+                "summary": "Create asset",
                 "parameters": [
                     {
-                        "description": "Piece payload",
+                        "description": "Asset payload",
                         "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.createPieceRequest"
+                            "$ref": "#/definitions/handlers.createAssetRequest"
                         }
                     }
                 ],
@@ -1003,7 +1003,7 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.Piece"
+                            "$ref": "#/definitions/models.Asset"
                         }
                     },
                     "400": {
@@ -1027,25 +1027,25 @@
                 }
             }
         },
-        "/api/content-bank/pieces/{id}": {
+        "/api/content-bank/assets/{id}": {
             "get": {
                 "security": [
                     {
                         "CookieAuth": []
                     }
                 ],
-                "description": "Returns a single content bank piece by Sqid.",
+                "description": "Returns a single content bank asset by Sqid.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "content-bank"
                 ],
-                "summary": "Get piece",
+                "summary": "Get asset",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Piece Sqid",
+                        "description": "Asset Sqid",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1055,7 +1055,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Piece"
+                            "$ref": "#/definitions/models.Asset"
                         }
                     },
                     "401": {
@@ -1084,7 +1084,7 @@
                         "CookieAuth": []
                     }
                 ],
-                "description": "Updates title and content of an existing piece.",
+                "description": "Updates title and content of an existing asset.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1094,22 +1094,22 @@
                 "tags": [
                     "content-bank"
                 ],
-                "summary": "Update piece",
+                "summary": "Update asset",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Piece Sqid",
+                        "description": "Asset Sqid",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Piece payload",
+                        "description": "Asset payload",
                         "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.updatePieceRequest"
+                            "$ref": "#/definitions/handlers.updateAssetRequest"
                         }
                     }
                 ],
@@ -1117,7 +1117,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Piece"
+                            "$ref": "#/definitions/models.Asset"
                         }
                     },
                     "400": {
@@ -1155,15 +1155,15 @@
                         "CookieAuth": []
                     }
                 ],
-                "description": "Deletes a content bank piece by Sqid.",
+                "description": "Deletes a content bank asset by Sqid.",
                 "tags": [
                     "content-bank"
                 ],
-                "summary": "Delete piece",
+                "summary": "Delete asset",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Piece Sqid",
+                        "description": "Asset Sqid",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1600,7 +1600,7 @@
                         "CookieAuth": []
                     }
                 ],
-                "description": "Returns all posts ordered by creation date, with campaign, platform, and pieces hydrated.",
+                "description": "Returns all posts ordered by creation date, with campaign, platform, and assets hydrated.",
                 "produces": [
                     "application/json"
                 ],
@@ -1692,7 +1692,7 @@
                         "CookieAuth": []
                     }
                 ],
-                "description": "Returns a single post by Sqid with campaign, platform, and pieces hydrated.",
+                "description": "Returns a single post by Sqid with campaign, platform, and assets hydrated.",
                 "produces": [
                     "application/json"
                 ],
@@ -2647,6 +2647,12 @@
                 "name"
             ],
             "properties": {
+                "asset_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "budget": {
                     "type": "number"
                 },
@@ -2674,12 +2680,6 @@
                 "name": {
                     "type": "string"
                 },
-                "pieces_ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "start_date": {
                     "type": "string"
                 },
@@ -2704,7 +2704,7 @@
                 "tone_guidelines": {
                     "type": "string"
                 },
-                "use_pieces": {
+                "use_assets": {
                     "type": "boolean"
                 }
             }
@@ -2760,7 +2760,7 @@
                 }
             }
         },
-        "handlers.createPieceRequest": {
+        "handlers.createAssetRequest": {
             "type": "object",
             "required": [
                 "content",
@@ -2887,7 +2887,7 @@
                 "title": {
                     "type": "string"
                 },
-                "used_pieces_ids": {
+                "used_asset_ids": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -2909,7 +2909,7 @@
                 }
             }
         },
-        "handlers.updatePieceRequest": {
+        "handlers.updateAssetRequest": {
             "type": "object",
             "required": [
                 "content",
@@ -2961,9 +2961,50 @@
                 }
             }
         },
+        "models.Asset": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "tag_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Tag"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Campaign": {
             "type": "object",
             "properties": {
+                "asset_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "budget": {
                     "type": "number"
                 },
@@ -3003,12 +3044,6 @@
                 },
                 "name": {
                     "type": "string"
-                },
-                "pieces_ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "platforms": {
                     "type": "array",
@@ -3054,7 +3089,7 @@
                 "updated_at": {
                     "type": "string"
                 },
-                "use_pieces": {
+                "use_assets": {
                     "type": "boolean"
                 }
             }
@@ -3135,41 +3170,6 @@
                 },
                 "sequence": {
                     "type": "integer"
-                }
-            }
-        },
-        "models.Piece": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "created_by": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "tag_ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Tag"
-                    }
-                },
-                "title": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
                 }
             }
         },
@@ -3270,16 +3270,16 @@
                 "updated_at": {
                     "type": "string"
                 },
-                "used_pieces": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Piece"
-                    }
-                },
-                "used_pieces_ids": {
+                "used_asset_ids": {
                     "type": "array",
                     "items": {
                         "type": "string"
+                    }
+                },
+                "used_assets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Asset"
                     }
                 }
             }
