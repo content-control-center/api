@@ -1034,7 +1034,7 @@
                         "CookieAuth": []
                     }
                 ],
-                "description": "Accepts one or more `.md` files (max 10 MB each), converts each to BlockNote JSON, and creates one Asset per file. Files are processed independently — one failure does not block others. Original `.md` files are not stored.",
+                "description": "Accepts one or more `.md` (max 10 MB) or `.pdf` (max 50 MB) files. Markdown files are converted to BlockNote JSON synchronously; PDFs are uploaded to object storage and processed asynchronously (text extraction, page-aware chunking, embedding, thumbnail). Files are processed independently — one failure does not block others.",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -1044,11 +1044,11 @@
                 "tags": [
                     "content-bank"
                 ],
-                "summary": "Upload Markdown file(s)",
+                "summary": "Upload Markdown or PDF file(s)",
                 "parameters": [
                     {
                         "type": "file",
-                        "description": "Markdown file(s)",
+                        "description": "Markdown or PDF file(s)",
                         "name": "files",
                         "in": "formData",
                         "required": true
@@ -3029,6 +3029,9 @@
                 "created_by": {
                     "type": "string"
                 },
+                "file": {
+                    "$ref": "#/definitions/models.AssetFile"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -3051,6 +3054,45 @@
                     "type": "string"
                 },
                 "type": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.AssetFile": {
+            "type": "object",
+            "properties": {
+                "asset_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mime_type": {
+                    "type": "string"
+                },
+                "original_name": {
+                    "type": "string"
+                },
+                "page_count": {
+                    "type": "integer"
+                },
+                "s3_key": {
+                    "type": "string"
+                },
+                "size_bytes": {
+                    "type": "integer"
+                },
+                "thumbnail_s3_key": {
+                    "type": "string"
+                },
+                "thumbnail_url": {
+                    "description": "ThumbnailURL is a transient public URL rendered from ThumbnailS3Key by\nthe handler layer before serialization. Not persisted.",
                     "type": "string"
                 },
                 "updated_at": {
