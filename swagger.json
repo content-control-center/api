@@ -1027,6 +1027,62 @@
                 }
             }
         },
+        "/api/content-bank/assets/upload": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Accepts one or more `.md` files (max 10 MB each), converts each to BlockNote JSON, and creates one Asset per file. Files are processed independently — one failure does not block others. Original `.md` files are not stored.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "content-bank"
+                ],
+                "summary": "Upload Markdown file(s)",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Markdown file(s)",
+                        "name": "files",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/content-bank/assets/{id}": {
             "get": {
                 "security": [
@@ -2976,6 +3032,9 @@
                 "id": {
                     "type": "string"
                 },
+                "status": {
+                    "type": "string"
+                },
                 "tag_ids": {
                     "type": "array",
                     "items": {
@@ -2989,6 +3048,9 @@
                     }
                 },
                 "title": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 },
                 "updated_at": {
