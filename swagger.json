@@ -2897,8 +2897,7 @@
             "required": [
                 "campaign_id",
                 "platform_id",
-                "platform_post_type",
-                "title"
+                "platform_post_type"
             ],
             "properties": {
                 "campaign_id": {
@@ -3405,19 +3404,21 @@
             "type": "string",
             "enum": [
                 "draft",
-                "in_review",
-                "approved",
+                "ready_for_publish",
                 "scheduled",
+                "scheduled_for_manual_publishing",
+                "failed",
                 "published",
-                "failed"
+                "not_published"
             ],
             "x-enum-varnames": [
                 "PostStatusDraft",
-                "PostStatusInReview",
-                "PostStatusApproved",
+                "PostStatusReadyForPublish",
                 "PostStatusScheduled",
+                "PostStatusScheduledForManualPublish",
+                "PostStatusFailed",
                 "PostStatusPublished",
-                "PostStatusFailed"
+                "PostStatusNotPublished"
             ]
         },
         "models.PostTypeMap": {
