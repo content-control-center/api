@@ -1749,7 +1749,7 @@
                         "CookieAuth": []
                     }
                 ],
-                "description": "Creates a new post. The created_by field is set from the authenticated session.\nThe `content` field is a Markdown string; the frontend renders it via BlockNote.",
+                "description": "Creates a new post. The created_by field is set from the authenticated session.\nThe `content` field is a Markdown string; the frontend renders it via BlockNote.\n`platform_id` and `platform_post_type` are required only when `status` is not `draft`;\ndrafts can be saved without a platform chosen up front.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1856,7 +1856,7 @@
                         "CookieAuth": []
                     }
                 ],
-                "description": "Replaces all mutable fields of an existing post.\nThe `content` field is a Markdown string; the frontend renders it via BlockNote.",
+                "description": "Replaces all mutable fields of an existing post.\nThe `content` field is a Markdown string; the frontend renders it via BlockNote.\n`platform_id` and `platform_post_type` are required only when the new `status` is\nnot `draft`; transitioning a draft to `ready_for_publish` (or beyond) without a\nplatform chosen returns 400.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3205,9 +3205,7 @@
         "handlers.postRequest": {
             "type": "object",
             "required": [
-                "campaign_id",
-                "platform_id",
-                "platform_post_type"
+                "campaign_id"
             ],
             "properties": {
                 "campaign_id": {
@@ -3232,6 +3230,7 @@
                     }
                 },
                 "platform_id": {
+                    "description": "PlatformID + PlatformPostType are required only when status is not\n\"draft\" — see requirePlatformIfNotDraft below. Drafts can be saved\nbefore the user has picked a platform (CON-60).",
                     "type": "string"
                 },
                 "platform_post_type": {
@@ -3660,6 +3659,7 @@
                     "$ref": "#/definitions/models.Platform"
                 },
                 "platform_id": {
+                    "description": "platform_id and platform_post_type are nullable so draft posts can\nexist without a platform chosen up front (CON-60). They become\nrequired when the post moves out of \"draft\" — enforced by the\nposts handler, not by the schema.\n\n`nullzero` makes bun send NULL (not \"\") for empty values, which is\nrequired for platform_id because the FK to platforms can't match\nan empty string. We use it on platform_post_type too for symmetry.",
                     "type": "string"
                 },
                 "platform_post_type": {
