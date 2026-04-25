@@ -1448,6 +1448,288 @@
                 }
             }
         },
+        "/api/integrations/zernio/accounts": {
+            "get": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Returns the local view of accounts attached via the\nZernio profile, plus the last sync timestamp + status.\nReads from SQLite — does not call Zernio.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "zernio"
+                ],
+                "summary": "List Zernio social accounts (local mirror)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.accountsResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "integration_disabled",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/integrations/zernio/connect-links": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Returns a one-shot connect URL that the user opens in\na browser to authorize a social account on the chosen\nplatform. The URL contains a short-lived token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "zernio"
+                ],
+                "summary": "Create a Zernio connect link",
+                "parameters": [
+                    {
+                        "description": "Platform to connect",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.connectLinkRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.connectLinkResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid_platform",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "integration_disabled",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "rate_limited",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "integration_degraded",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/integrations/zernio/health": {
+            "get": {
+                "description": "Public endpoint suitable for inclusion in monitoring\ndashboards. Reports whether the integration is enabled,\nits state (disabled / degraded / ok), the bootstrapped\nprofile ID, and the most recent sync result.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "zernio"
+                ],
+                "summary": "Zernio integration health",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.healthResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/integrations/zernio/platforms": {
+            "get": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Returns the Phase 1 allowlist with each platform's\nsupportedPostTypes derived from the local platforms\ntable. Clients render a picker from this list.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "zernio"
+                ],
+                "summary": "List Zernio-supported platforms (Phase 1 allowlist)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.platformsResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/integrations/zernio/profile/repair": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Triggers a fresh Zernio profile bootstrap for operational\nrecovery. Idempotent: a successful repair leaves the\nintegration in the \"ok\" state.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "zernio"
+                ],
+                "summary": "Repair Zernio profile",
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "integration_disabled",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/integrations/zernio/sync": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Asks the background worker to run a sync at its\nearliest opportunity. Returns 202 with the previous\nlast_sync_at value so callers can poll for progress.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "zernio"
+                ],
+                "summary": "Trigger a Zernio sync tick",
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "integration_disabled",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/platforms": {
             "get": {
                 "security": [
@@ -2987,6 +3269,52 @@
         }
     },
     "definitions": {
+        "handlers.accountInfo": {
+            "type": "object",
+            "properties": {
+                "avatarUrl": {
+                    "type": "string"
+                },
+                "connectedAt": {
+                    "type": "string"
+                },
+                "displayName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "isActive": {
+                    "type": "boolean"
+                },
+                "lastSyncedAt": {
+                    "type": "string"
+                },
+                "platform": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.accountsResponse": {
+            "type": "object",
+            "properties": {
+                "accounts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.accountInfo"
+                    }
+                },
+                "lastSyncAt": {
+                    "type": "string"
+                },
+                "lastSyncStatus": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.assistantRequest": {
             "type": "object",
             "required": [
@@ -3118,6 +3446,31 @@
                 }
             }
         },
+        "handlers.connectLinkRequest": {
+            "type": "object",
+            "required": [
+                "platform"
+            ],
+            "properties": {
+                "platform": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.connectLinkResponse": {
+            "type": "object",
+            "properties": {
+                "connectUrl": {
+                    "type": "string"
+                },
+                "expiresAt": {
+                    "type": "string"
+                },
+                "platform": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.createAssetRequest": {
             "type": "object",
             "required": [
@@ -3182,6 +3535,46 @@
                 }
             }
         },
+        "handlers.healthResponse": {
+            "type": "object",
+            "properties": {
+                "accountCount": {
+                    "type": "integer"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "lastSyncAt": {
+                    "type": "string"
+                },
+                "lastSyncStatus": {
+                    "type": "string"
+                },
+                "profileId": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.platformInfo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "supportedPostTypes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "handlers.platformRequest": {
             "type": "object",
             "required": [
@@ -3199,6 +3592,17 @@
                 },
                 "post_types": {
                     "$ref": "#/definitions/models.PostTypeMap"
+                }
+            }
+        },
+        "handlers.platformsResponse": {
+            "type": "object",
+            "properties": {
+                "platforms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.platformInfo"
+                    }
                 }
             }
         },
