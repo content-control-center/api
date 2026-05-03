@@ -9,6 +9,95 @@
     "host": "localhost:9001",
     "basePath": "/",
     "paths": {
+        "/api/auto-publish-allowlist": {
+            "get": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Returns the set of Zernio platform identifiers Ogen is\npermitted to auto-publish to. Empty by default.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auto-publish-allowlist"
+                ],
+                "summary": "Get auto-publish allowlist",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.autoPublishAllowlistResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Replaces the auto-publish allowlist with the supplied\nset of Zernio platform identifiers. Replace-not-append:\nany platform absent from the body is removed. An empty\narray clears the allowlist.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auto-publish-allowlist"
+                ],
+                "summary": "Replace auto-publish allowlist",
+                "parameters": [
+                    {
+                        "description": "Desired allowlist",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.autoPublishAllowlistRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.autoPublishAllowlistResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "platform_not_supported",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/campaign_types": {
             "get": {
                 "security": [
@@ -3567,6 +3656,28 @@
                 }
             }
         },
+        "handlers.autoPublishAllowlistRequest": {
+            "type": "object",
+            "properties": {
+                "platforms": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "handlers.autoPublishAllowlistResponse": {
+            "type": "object",
+            "properties": {
+                "platforms": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "handlers.campaignRequest": {
             "type": "object",
             "required": [
@@ -3944,6 +4055,9 @@
                     "items": {
                         "$ref": "#/definitions/handlers.accountView"
                     }
+                },
+                "auto_publish_allowed": {
+                    "type": "boolean"
                 },
                 "connected": {
                     "type": "boolean"
