@@ -231,6 +231,76 @@
                 }
             }
         },
+        "/api/analytics/overview": {
+            "get": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "KPI cards + per-metric series + deterministic insights for a window.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "Cumulative analytics overview",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Relative window shorthand, e.g. 28d/12w/6mo (default 28d)",
+                        "name": "window",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Inclusive start date YYYY-MM-DD (with to, overrides window)",
+                        "name": "from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Inclusive end date YYYY-MM-DD",
+                        "name": "to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "day|week|month (default adaptive)",
+                        "name": "granularity",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/analytics/posting-frequency": {
             "get": {
                 "security": [
