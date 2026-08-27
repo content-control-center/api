@@ -231,6 +231,70 @@
                 }
             }
         },
+        "/api/analytics/learnings": {
+            "get": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Heatmap + post-lifespan curve + structural what-works/fading patterns.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "Learnings — all-time posting knowledge",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Optional baseline lower bound YYYY-MM-DD (default all-time)",
+                        "name": "since",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fading comparison window, e.g. 90d/3mo/12w (default 90d)",
+                        "name": "trend_window",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "reach|saves (default reach)",
+                        "name": "metric",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/analytics/overview": {
             "get": {
                 "security": [
