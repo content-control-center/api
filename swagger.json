@@ -301,6 +301,88 @@
                 }
             }
         },
+        "/api/analytics/performers": {
+            "get": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Best/Worst posts for a window, age-adjusted vs the account's typical, plus insights.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "Performers and outliers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Relative window shorthand, e.g. 28d (default 28d)",
+                        "name": "window",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Inclusive start date YYYY-MM-DD (with to, overrides window)",
+                        "name": "from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Inclusive end date YYYY-MM-DD",
+                        "name": "to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "against_typical|reach|engagement_rate|interactions (default against_typical)",
+                        "name": "by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Rows per list, default 5, clamped",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Optional platform filter",
+                        "name": "platform",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/analytics/posting-frequency": {
             "get": {
                 "security": [
