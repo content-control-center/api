@@ -2213,7 +2213,7 @@
                         "CookieAuth": []
                     }
                 ],
-                "description": "Accepts one or more `.md` (max 10 MB) or `.pdf` (max 50 MB) files. Markdown files are converted to BlockNote JSON synchronously; PDFs are uploaded to object storage and processed asynchronously (text extraction, page-aware chunking, embedding, thumbnail). Files are processed independently — one failure does not block others.",
+                "description": "Accepts one or more `.md` (max 10 MB), `.pdf` (max 50 MB), or image (JPEG/PNG/WebP/GIF, max 10 MB) files. Markdown files are converted to BlockNote JSON synchronously; PDFs are uploaded to object storage and processed asynchronously (text extraction, page-aware chunking, embedding, thumbnail); images (CON-246) are probed and stored synchronously as `IMG` assets (`ready`), deduplicated within the tenant by checksum. Files are processed independently — one failure does not block others.",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -2223,11 +2223,11 @@
                 "tags": [
                     "content-bank"
                 ],
-                "summary": "Upload Markdown or PDF file(s)",
+                "summary": "Upload Markdown, PDF, or image file(s)",
                 "parameters": [
                     {
                         "type": "file",
-                        "description": "Markdown or PDF file(s)",
+                        "description": "Markdown, PDF, or image file(s)",
                         "name": "files",
                         "in": "formData",
                         "required": true
@@ -7907,6 +7907,9 @@
                 "title"
             ],
             "properties": {
+                "alt_text": {
+                    "type": "string"
+                },
                 "content": {
                     "type": "string"
                 },
@@ -8519,10 +8522,12 @@
         "handlers.updateAssetRequest": {
             "type": "object",
             "required": [
-                "content",
                 "title"
             ],
             "properties": {
+                "alt_text": {
+                    "type": "string"
+                },
                 "content": {
                     "type": "string"
                 },
@@ -8608,6 +8613,10 @@
         "models.Asset": {
             "type": "object",
             "properties": {
+                "alt_text": {
+                    "description": "AltText is a short accessibility description for image assets (CON-246),\ndistinct from content (the longer, embeddable description). Empty for\nnon-image assets.",
+                    "type": "string"
+                },
                 "content": {
                     "type": "string"
                 },
@@ -8666,11 +8675,20 @@
                 "asset_id": {
                     "type": "string"
                 },
+                "checksum_sha256": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
+                "height": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "string"
+                },
+                "is_animated": {
+                    "type": "boolean"
                 },
                 "mime_type": {
                     "type": "string"
@@ -8691,11 +8709,18 @@
                     "type": "string"
                 },
                 "thumbnail_url": {
-                    "description": "ThumbnailURL is a transient public URL rendered from ThumbnailS3Key by\nthe handler layer before serialization. Not persisted.",
                     "type": "string"
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "url": {
+                    "description": "URL and ThumbnailURL are transient public URLs rendered from S3Key /\nThumbnailS3Key by the handler layer before serialization. URL is the\noriginal — the one an image viewer renders (CON-246). Not persisted.",
+                    "type": "string"
+                },
+                "width": {
+                    "description": "Width, Height, IsAnimated and ChecksumSHA256 describe image files (CON-246).\nSame names/types as post_attachments so the attach-to-post bridge is a\nfield copy. Zero/empty for PDFs. ChecksumSHA256 also backs upload dedupe.",
+                    "type": "integer"
                 }
             }
         },
