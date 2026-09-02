@@ -3749,6 +3749,250 @@
                 }
             }
         },
+        "/api/notifications": {
+            "get": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "List notifications",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "unread|all (default all)",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page size (default 30, max 100)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "keyset cursor: seq to page before (older)",
+                        "name": "before",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "only notifications newer than this seq",
+                        "name": "since",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Notification"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/notifications/mark-all-read": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Mark all notifications read",
+                "parameters": [
+                    {
+                        "description": "optional seq upper bound",
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.markAllReadRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/notifications/stream": {
+            "get": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Long-lived Server-Sent Events stream of the caller's\nnotifications. On connect the server replays everything created\nafter the client's cursor (Last-Event-ID header, or ?since=)\nfrom the durable log, then switches to live push — so a client\nthat was offline during a burst misses nothing. A fresh client\n(no cursor) goes live-only and catches history via the REST list.\n\nEach notification is one frame: `id: \u003cseq\u003e` / `event:\nnotification` / `data: \u003cjson\u003e`. A heartbeat comment (`: ping`)\nis sent every 20 seconds.",
+                "produces": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Notification stream (SSE)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Replay cursor (seq)",
+                        "name": "Last-Event-ID",
+                        "in": "header"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Replay cursor (seq); Last-Event-ID wins",
+                        "name": "since",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "SSE stream"
+                    }
+                }
+            }
+        },
+        "/api/notifications/unread-count": {
+            "get": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Unread notification count (badge)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/notifications/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Dismiss (soft-delete) a notification",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Notification id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Mark a notification read/unread",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Notification id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "read state",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.patchNotificationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Notification"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/password-reset": {
             "post": {
                 "description": "Always answers 202, whether or not the address has an account, and in the same latency envelope — the response never reveals whether an account exists (CON-161). On a hit it emails a single-use reset link; on a miss it does nothing.",
@@ -8173,6 +8417,15 @@
                 }
             }
         },
+        "handlers.markAllReadRequest": {
+            "type": "object",
+            "properties": {
+                "before": {
+                    "description": "Before bounds the update to notifications the caller has actually seen\n(seq \u003c= Before), so one that arrives mid-click stays unread. 0 = all.",
+                    "type": "integer"
+                }
+            }
+        },
         "handlers.passwordResetConfirmRequest": {
             "type": "object",
             "required": [
@@ -8198,6 +8451,14 @@
             "properties": {
                 "email": {
                     "type": "string"
+                }
+            }
+        },
+        "handlers.patchNotificationRequest": {
+            "type": "object",
+            "properties": {
+                "read": {
+                    "type": "boolean"
                 }
             }
         },
@@ -9187,6 +9448,72 @@
                     "type": "string"
                 }
             }
+        },
+        "models.JSONMap": {
+            "type": "object",
+            "additionalProperties": {}
+        },
+        "models.Notification": {
+            "type": "object",
+            "properties": {
+                "action_url": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "data": {
+                    "$ref": "#/definitions/models.JSONMap"
+                },
+                "entity_id": {
+                    "type": "string"
+                },
+                "entity_type": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "level": {
+                    "$ref": "#/definitions/models.NotificationLevel"
+                },
+                "read_at": {
+                    "type": "string"
+                },
+                "seq": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.NotificationLevel": {
+            "type": "string",
+            "enum": [
+                "info",
+                "success",
+                "warning",
+                "error"
+            ],
+            "x-enum-varnames": [
+                "NotificationLevelInfo",
+                "NotificationLevelSuccess",
+                "NotificationLevelWarning",
+                "NotificationLevelError"
+            ]
         },
         "models.PDFConstraints": {
             "type": "object",
