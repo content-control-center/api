@@ -7772,6 +7772,12 @@
                         "type": "string"
                     }
                 },
+                "brand_audience_id": {
+                    "type": "string"
+                },
+                "brand_voice_id": {
+                    "type": "string"
+                },
                 "budget": {
                     "type": "number"
                 },
@@ -8343,6 +8349,12 @@
                 "campaign_id"
             ],
             "properties": {
+                "brand_audience_id": {
+                    "type": "string"
+                },
+                "brand_voice_id": {
+                    "type": "string"
+                },
                 "campaign_id": {
                     "type": "string"
                 },
@@ -8830,6 +8842,13 @@
                         "type": "string"
                     }
                 },
+                "brand_audience_id": {
+                    "type": "string"
+                },
+                "brand_voice_id": {
+                    "description": "Brand bindings (CON-245): the voice/audience this campaign writes in.\nNullable — resolution falls back to the workspace default voice /\ntone_guidelines prose when unset. FK ON DELETE SET NULL.",
+                    "type": "string"
+                },
                 "budget": {
                     "type": "number"
                 },
@@ -9230,6 +9249,13 @@
         "models.Post": {
             "type": "object",
             "properties": {
+                "brand_audience_id": {
+                    "type": "string"
+                },
+                "brand_voice_id": {
+                    "description": "Brand bindings (CON-245): this post's own voice/audience. Nullable —\nresolution falls back to the campaign's, then the workspace default /\nlegacy prose. content_plan/draft_post stamp the voice; both are overridable\nvia PUT /api/posts/:id or the targeted /:id/brand. FK ON DELETE SET NULL.",
+                    "type": "string"
+                },
                 "campaign": {
                     "description": "Hydrated relations — not stored in the database.",
                     "allOf": [
