@@ -7925,6 +7925,19 @@
         }
     },
     "definitions": {
+        "handlers.Optional-string": {
+            "type": "object",
+            "properties": {
+                "present": {
+                    "description": "the key appeared in the request body",
+                    "type": "boolean"
+                },
+                "value": {
+                    "description": "nil when the value was explicit null",
+                    "type": "string"
+                }
+            }
+        },
         "handlers.acceptInvitationRequest": {
             "type": "object",
             "properties": {
@@ -8204,10 +8217,15 @@
                     }
                 },
                 "brand_audience_id": {
-                    "type": "string"
+                    "$ref": "#/definitions/handlers.Optional-string"
                 },
                 "brand_voice_id": {
-                    "type": "string"
+                    "description": "Presence-aware (CON-245): omitting a brand ref on a full-replace save\nleaves the stored value alone; an explicit null clears it. See Optional.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/handlers.Optional-string"
+                        }
+                    ]
                 },
                 "budget": {
                     "type": "number"
@@ -8798,10 +8816,15 @@
             ],
             "properties": {
                 "brand_audience_id": {
-                    "type": "string"
+                    "$ref": "#/definitions/handlers.Optional-string"
                 },
                 "brand_voice_id": {
-                    "type": "string"
+                    "description": "BrandVoiceID / BrandAudienceID are presence-aware (CON-245): unlike the\nother client-authored fields on this full-replace body, these are stamped\nserver-side by content_plan / draft_post, so an omitted key must leave the\nstored ref untouched rather than null it. See Optional and apply.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/handlers.Optional-string"
+                        }
+                    ]
                 },
                 "campaign_id": {
                     "type": "string"
