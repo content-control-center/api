@@ -1305,7 +1305,7 @@
                         "CookieAuth": []
                     }
                 ],
-                "description": "Returns all campaigns ordered by creation date.",
+                "description": "Returns the active set (neither archived nor deleted) ordered by creation date. Pass ?archived=true to list archived campaigns instead.",
                 "produces": [
                     "application/json"
                 ],
@@ -1313,6 +1313,14 @@
                     "campaigns"
                 ],
                 "summary": "List campaigns",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "List archived campaigns instead of the active set",
+                        "name": "archived",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1607,11 +1615,57 @@
                         "CookieAuth": []
                     }
                 ],
-                "description": "Deletes a campaign by Sqid.",
+                "description": "Soft-deletes a campaign by Sqid. The row is retained as a safety net (no self-serve restore); it disappears from lists and reads.",
                 "tags": [
                     "campaigns"
                 ],
                 "summary": "Delete campaign",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Campaign Sqid",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/campaigns/{id}/archive": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Removes a campaign from the active list. Reversible via unarchive.",
+                "tags": [
+                    "campaigns"
+                ],
+                "summary": "Archive campaign",
                 "parameters": [
                     {
                         "type": "string",
@@ -2175,6 +2229,52 @@
                 }
             }
         },
+        "/api/campaigns/{id}/unarchive": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Returns an archived campaign to the active list.",
+                "tags": [
+                    "campaigns"
+                ],
+                "summary": "Unarchive campaign",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Campaign Sqid",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/content-bank/assets": {
             "get": {
                 "security": [
@@ -2244,6 +2344,66 @@
                         "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/models.Asset"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/content-bank/assets/tags": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Adds and/or removes tag IDs on many assets in one call — the\nfiling operation the Content Bank's multi-select needs (CON-279),\nwhere you tag many documents at once. Each listed asset keeps the\ntags it already has, minus `remove`, plus `add`; the result is\ndeduped and preserves order. Assets outside the caller's tenant\nare skipped. Returns the updated assets with tags hydrated.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "content-bank"
+                ],
+                "summary": "Bulk add/remove tags across assets",
+                "parameters": [
+                    {
+                        "description": "Bulk tag payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.bulkTagRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Asset"
+                            }
                         }
                     },
                     "400": {
@@ -8003,6 +8163,33 @@
                 }
             }
         },
+        "handlers.bulkTagRequest": {
+            "type": "object",
+            "required": [
+                "asset_ids"
+            ],
+            "properties": {
+                "add": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "asset_ids": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "remove": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "handlers.campaignRequest": {
             "type": "object",
             "required": [
@@ -8647,6 +8834,10 @@
                 "published_at": {
                     "type": "string"
                 },
+                "published_url": {
+                    "description": "PublishedURL (CON-165) lets the front-end record a permalink for posts\nZernio cannot verify (the CON-149 skip path — e.g. LinkedIn personal\naccounts) or correct a wrong one. Like every field on this whole-resource\nPUT, the FE round-trips the current value; an empty string clears it.",
+                    "type": "string"
+                },
                 "scheduled_at": {
                     "type": "string"
                 },
@@ -9097,6 +9288,10 @@
         "models.Campaign": {
             "type": "object",
             "properties": {
+                "archived_at": {
+                    "description": "Lifecycle (CON-156 BE 6). A campaign leaves the active set by being\narchived (reversible) or soft-deleted (an operational safety net, not an\nundo — no self-serve restore). Both are nullable timestamps filtered\nexplicitly in the repository rather than via bun's soft_delete tag, so\narchive and delete stay independent: GetByID still returns an archived\ncampaign (to unarchive it) while hiding a deleted one.",
+                    "type": "string"
+                },
                 "asset_ids": {
                     "type": "array",
                     "items": {
@@ -9126,6 +9321,9 @@
                     "type": "string"
                 },
                 "currency": {
+                    "type": "string"
+                },
+                "deleted_at": {
                     "type": "string"
                 },
                 "description": {
@@ -9645,6 +9843,10 @@
                     "type": "string"
                 },
                 "published_results": {
+                    "type": "string"
+                },
+                "published_url": {
+                    "description": "PublishedURL is the platform permalink for the live post (CON-165), kept\nas a first-class field so the front-end can render \"View post\" off the\npost it already has, without an analytics round-trip (CON-149). Set from\nthe publisher's canonical URL on publish/verify, or accepted on PUT for\nthe Zernio skip path. `nullzero` sends NULL (not \"\") when unset; a URL\nwith an empty PublisherPostID is a user-supplied (unverified) link.",
                     "type": "string"
                 },
                 "publisher": {
