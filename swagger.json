@@ -1700,6 +1700,138 @@
                 }
             }
         },
+        "/api/campaigns/{id}/assets": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Unions the given asset ids into the campaign's content-bank set\n(campaigns.asset_ids) and turns use_assets on, touching no other\nfield. The write is a single atomic UPDATE, so concurrent\nattaches of different documents both survive and omitted fields\nare never reset (CON-233). Adding an already-present id is a\nno-op. Returns the updated campaign.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaigns"
+                ],
+                "summary": "Attach content-bank assets to a campaign",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Campaign Sqid",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Asset ids to attach",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.assetMembershipRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Campaign"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/campaigns/{id}/assets/{assetId}": {
+            "delete": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Removes one asset id from the campaign's content-bank set\n(campaigns.asset_ids) and re-derives use_assets from it, so\ndetaching the last source turns use_assets off (CON-233).\nRemoving an id that is not present is a no-op. Returns the\nupdated campaign.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "campaigns"
+                ],
+                "summary": "Detach a content-bank asset from a campaign",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Campaign Sqid",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Asset Sqid to detach",
+                        "name": "assetId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Campaign"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/campaigns/{id}/assistant": {
             "post": {
                 "security": [
@@ -5158,6 +5290,156 @@
                 }
             }
         },
+        "/api/posts/{id}/assets": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Unions the given asset ids into the post's sources\n(posts.used_asset_ids), touching no other field. The write is a\nsingle atomic UPDATE, so concurrent attaches of different sources\nboth survive and omitted fields are never reset (CON-233).\nAdding an already-present id is a no-op. A source change to a\nsubmitted post (scheduled/published) is content-locked (409),\nmirroring PUT (CON-251). Returns the updated post.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts"
+                ],
+                "summary": "Attach source assets to a post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Post Sqid",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Asset ids to attach",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.assetMembershipRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Post"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/posts/{id}/assets/{assetId}": {
+            "delete": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Removes one asset id from the post's sources\n(posts.used_asset_ids), touching no other field (CON-233).\nRemoving an id that is not present is a no-op. Detaching a source\nfrom a submitted post (scheduled/published) is content-locked\n(409), mirroring PUT (CON-251). Returns the updated post.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts"
+                ],
+                "summary": "Detach a source asset from a post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Post Sqid",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Asset Sqid to detach",
+                        "name": "assetId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Post"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/posts/{id}/assistant": {
             "post": {
                 "security": [
@@ -7925,6 +8207,35 @@
         }
     },
     "definitions": {
+        "handlers.Optional-bool": {
+            "type": "object",
+            "properties": {
+                "present": {
+                    "description": "the key appeared in the request body",
+                    "type": "boolean"
+                },
+                "value": {
+                    "description": "nil when the value was explicit null",
+                    "type": "boolean"
+                }
+            }
+        },
+        "handlers.Optional-models_StringSlice": {
+            "type": "object",
+            "properties": {
+                "present": {
+                    "description": "the key appeared in the request body",
+                    "type": "boolean"
+                },
+                "value": {
+                    "description": "nil when the value was explicit null",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "handlers.Optional-string": {
             "type": "object",
             "properties": {
@@ -8072,6 +8383,17 @@
                 }
             }
         },
+        "handlers.assetMembershipRequest": {
+            "type": "object",
+            "properties": {
+                "asset_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "handlers.assistantRequest": {
             "type": "object",
             "required": [
@@ -8211,10 +8533,7 @@
             ],
             "properties": {
                 "asset_ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                    "$ref": "#/definitions/handlers.Optional-models_StringSlice"
                 },
                 "brand_audience_id": {
                     "$ref": "#/definitions/handlers.Optional-string"
@@ -8299,7 +8618,12 @@
                     "type": "string"
                 },
                 "use_assets": {
-                    "type": "boolean"
+                    "description": "UseAssets / AssetIDs are presence-aware (CON-233): the content-bank set has\nits own membership endpoints (POST/DELETE /campaigns/:id/assets) that keep\nuse_assets derived from it, so an ordinary whole-record save that omits\nthese must leave them alone rather than restate the set (and reset the flag)\nover an in-flight membership write. Present replaces; explicit null on\nasset_ids clears. See Optional, applyToValue and applyOptionalSlice.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/handlers.Optional-bool"
+                        }
+                    ]
                 }
             }
         },
@@ -8878,10 +9202,12 @@
                     "type": "string"
                 },
                 "used_asset_ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                    "description": "UsedAssetIDs is presence-aware (CON-233): the sources have their own\nmembership endpoints (POST/DELETE /posts/:id/assets), so an ordinary\nwhole-record save that omits the key must leave the stored set alone rather\nthan restate it and race the membership write. A present array replaces it;\nan explicit null clears it. See Optional and applyOptionalSlice.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/handlers.Optional-models_StringSlice"
+                        }
+                    ]
                 }
             }
         },
