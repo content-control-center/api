@@ -2237,7 +2237,7 @@
                         "CookieAuth": []
                     }
                 ],
-                "description": "Returns a quick overview of the campaign: brief recap, phases\n(with per-phase post counts), and content distribution by\nstatus, platform, and content type. Available to any user in\nthe campaign's tenant.",
+                "description": "Returns the per-campaign overview projection (CON-113): a plain\ntenant-scoped DB read, available to any user in the tenant.",
                 "produces": [
                     "application/json"
                 ],
@@ -5746,7 +5746,7 @@
                         "CookieAuth": []
                     }
                 ],
-                "description": "Rolls a post's content back to an earlier version (CON-68).\nRestore is non-destructive: the target version's content is\ncopied into a brand-new version that becomes the new HEAD, so\nthe full history is preserved and the restore is itself\nreversible. If the live post has unsnapshotted edits, they are\nauto-saved as a version first so nothing is lost. Restoring to\nthe version that already matches the current content is a no-op.",
+                "description": "Restore is non-destructive: the target version's content is\ncopied into a brand-new version that becomes the new HEAD, so\nthe full history is preserved and the restore is itself\nreversible. If the live post has unsnapshotted edits, they are\nauto-saved as a version first so nothing is lost. Restoring to\nthe version that already matches the current content is a no-op.",
                 "consumes": [
                     "application/json"
                 ],
@@ -5919,7 +5919,7 @@
                         "CookieAuth": []
                     }
                 ],
-                "description": "Confirms an externally/manually published post exists via Zernio's on-demand sync (CON-153), resolving the post's connected account (CON-150 rules). On a match it back-fills publisher_post_id, marks the post published, writes a first analytics snapshot, and emits post.analytics.updated. Returns {found:false} when the post can't be located.",
+                "description": "Confirms a manually-published post exists on the platform via Zernio sync-external, back-fills its publisher linkage + permalink, marks it published, and records a first analytics snapshot (CON-153).",
                 "consumes": [
                     "application/json"
                 ],
@@ -5939,7 +5939,7 @@
                         "required": true
                     },
                     {
-                        "description": "Post URL or platform post id",
+                        "description": "Verification payload",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -5956,53 +5956,8 @@
                             "additionalProperties": true
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "502": {
-                        "description": "Bad Gateway",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -6049,68 +6004,6 @@
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "CookieAuth": []
-                    }
-                ],
-                "description": "Manually creates a version snapshot of the current post content.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "posts"
-                ],
-                "summary": "Create post version",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Post Sqid",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Version payload",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.createVersionRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.PostVersion"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -8851,14 +8744,6 @@
                         "owner",
                         "member"
                     ]
-                }
-            }
-        },
-        "handlers.createVersionRequest": {
-            "type": "object",
-            "properties": {
-                "note": {
-                    "type": "string"
                 }
             }
         },
