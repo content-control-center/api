@@ -8220,6 +8220,19 @@
                 }
             }
         },
+        "handlers.Optional-int": {
+            "type": "object",
+            "properties": {
+                "present": {
+                    "description": "the key appeared in the request body",
+                    "type": "boolean"
+                },
+                "value": {
+                    "description": "nil when the value was explicit null",
+                    "type": "integer"
+                }
+            }
+        },
         "handlers.Optional-models_StringSlice": {
             "type": "object",
             "properties": {
@@ -8461,6 +8474,10 @@
                 },
                 "s3_key": {
                     "type": "string"
+                },
+                "segment_index": {
+                    "description": "SegmentIndex names which message of a threaded post this attachment\nbelongs to (CON-284), 0-based into Post.ThreadSegments. NULL for every\nattachment of a non-thread post — it belongs to the whole/single post,\ntoday's behaviour. Within a segment, Position still orders the media. A\npointer so nil ⇔ NULL is distinct from a valid segment 0.",
+                    "type": "integer"
                 },
                 "size_bytes": {
                     "type": "integer"
@@ -9198,6 +9215,13 @@
                 "target_audience_notes": {
                     "type": "string"
                 },
+                "thread_segments": {
+                    "description": "ThreadSegments (CON-284) is the ordered message list for a thread post\n(platform_post_type == \"thread\"): index 0 is the root, 1..N-1 the ordered\nreplies. A plain full-replace field — a present array replaces the stored\nsegments, an omitted/empty [] means \"not a thread\". It needs no CON-233\npresence-aware carve-out: per-segment media rides the attachments endpoint\n(via segment_index), so a whole-record save has nothing to race. When\nnon-empty, apply restamps Content from index 0 (the root mirror).",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ThreadSegment"
+                    }
+                },
                 "title": {
                     "type": "string"
                 },
@@ -9424,6 +9448,14 @@
                 },
                 "position": {
                     "type": "integer"
+                },
+                "segment_index": {
+                    "description": "SegmentIndex reassigns which thread segment the media belongs to (CON-284).\nPresence-aware so the three JSON states stay distinct: absent ⇒ leave as-is,\na number ⇒ move to that segment, explicit null ⇒ detach (back to a\nwhole-post attachment).",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/handlers.Optional-int"
+                        }
+                    ]
                 }
             }
         },
@@ -10224,6 +10256,13 @@
                 "target_audience_notes": {
                     "type": "string"
                 },
+                "thread_segments": {
+                    "description": "ThreadSegments holds the ordered messages of a threaded post (CON-284),\nused only when PlatformPostType == PostTypeThread: index 0 is the root,\n1..N-1 the ordered replies. Empty [] for every other post. Content\nmirrors segment 0 so thread-unaware readers (quality CON-184, listings,\ncampaign summaries CON-152, analytics title) keep working; writes that\nset segments restamp Content from the root. Per-segment media is carried\nby PostAttachment.SegmentIndex, not here.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ThreadSegment"
+                    }
+                },
                 "title": {
                     "type": "string"
                 },
@@ -10676,6 +10715,14 @@
                 }
             }
         },
+        "models.ThreadSegment": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                }
+            }
+        },
         "models.User": {
             "type": "object",
             "properties": {
@@ -10986,6 +11033,10 @@
                 },
                 "requires_content": {
                     "type": "boolean"
+                },
+                "segmented": {
+                    "description": "Segmented marks a post type whose composer authors an ordered list of\nmessages rather than one body (CON-284: the \"thread\" type). MaxContentChars\nthen carries the PER-SEGMENT limit (X 280 / Threads 500), and the UI renders\nthe segmented composer with a counter per message. false for every other type.",
+                    "type": "boolean"
                 }
             }
         },
@@ -11009,6 +11060,10 @@
                 },
                 "rule": {
                     "type": "string"
+                },
+                "segment": {
+                    "description": "Segment names the 0-based thread message a failure belongs to (CON-284),\nso the composer can highlight the offending message. nil for whole-post\nfailures and every non-thread post.",
+                    "type": "integer"
                 }
             }
         },
