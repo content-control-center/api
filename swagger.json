@@ -4409,61 +4409,6 @@
                         }
                     }
                 }
-            },
-            "post": {
-                "security": [
-                    {
-                        "CookieAuth": []
-                    }
-                ],
-                "description": "Creates a new platform.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "platforms"
-                ],
-                "summary": "Create platform",
-                "parameters": [
-                    {
-                        "description": "Platform payload",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.platformRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.Platform"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
             }
         },
         "/api/platforms/{id}": {
@@ -4496,121 +4441,6 @@
                         "schema": {
                             "$ref": "#/definitions/handlers.platformResponse"
                         }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "CookieAuth": []
-                    }
-                ],
-                "description": "Replaces all mutable fields of an existing platform.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "platforms"
-                ],
-                "summary": "Update platform",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Platform Sqid",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Platform payload",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.platformRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Platform"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "CookieAuth": []
-                    }
-                ],
-                "description": "Deletes a platform by Sqid.",
-                "tags": [
-                    "platforms"
-                ],
-                "summary": "Delete platform",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Platform Sqid",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
                     },
                     "401": {
                         "description": "Unauthorized",
@@ -8981,37 +8811,25 @@
                 }
             }
         },
-        "handlers.platformRequest": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "cadence": {
-                    "type": "string"
-                },
-                "constraints": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "post_types": {
-                    "$ref": "#/definitions/models.PostTypeMap"
-                }
-            }
-        },
         "handlers.platformResponse": {
             "type": "object",
             "properties": {
                 "cadence": {
                     "type": "string"
                 },
+                "connect_supported": {
+                    "description": "ConnectSupported records whether Ogen can OAuth-redirect connect this\nplatform. false documents the Bluesky-style app-password exclusion as data\nrather than code.",
+                    "type": "boolean"
+                },
                 "constraints": {
                     "type": "string"
                 },
                 "created_at": {
                     "type": "string"
+                },
+                "enabled": {
+                    "description": "Enabled is the operator soft on/off switch (CON-292). A disabled platform\ndrops from GET /api/platforms and blocks new connects, but already-scheduled\nposts still publish (the publish path resolves zernio_id regardless).",
+                    "type": "boolean"
                 },
                 "id": {
                     "type": "string"
@@ -9034,6 +8852,17 @@
                         "$ref": "#/definitions/handlers.publisherView"
                     }
                 },
+                "sort_order": {
+                    "description": "SortOrder drives composer/picker ordering (CON-292).",
+                    "type": "integer"
+                },
+                "supported_post_types": {
+                    "description": "SupportedPostTypes is the Zernio-publishable subset of PostTypes' slugs\n(CON-292) — replaces SupportedPlatform.SupportedPostTypes. PostTypes carries\nevery slug for display; this array marks which ones actually publish.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "text_constraints": {
                     "$ref": "#/definitions/models.TextConstraints"
                 },
@@ -9042,6 +8871,10 @@
                 },
                 "video_constraints": {
                     "$ref": "#/definitions/models.VideoConstraints"
+                },
+                "zernio_id": {
+                    "description": "ZernioID is the Zernio wire slug (\"twitter\", \"linkedin\", …). It replaces\nthe retired Go registry's sqidToZernioID map (CON-292): the publish path\nand connect flow resolve this off the row. \"\" means the operator has not\nyet assigned a slug (the row is not publishable until they do).",
+                    "type": "string"
                 }
             }
         },
@@ -10107,11 +9940,19 @@
                 "cadence": {
                     "type": "string"
                 },
+                "connect_supported": {
+                    "description": "ConnectSupported records whether Ogen can OAuth-redirect connect this\nplatform. false documents the Bluesky-style app-password exclusion as data\nrather than code.",
+                    "type": "boolean"
+                },
                 "constraints": {
                     "type": "string"
                 },
                 "created_at": {
                     "type": "string"
+                },
+                "enabled": {
+                    "description": "Enabled is the operator soft on/off switch (CON-292). A disabled platform\ndrops from GET /api/platforms and blocks new connects, but already-scheduled\nposts still publish (the publish path resolves zernio_id regardless).",
+                    "type": "boolean"
                 },
                 "id": {
                     "type": "string"
@@ -10128,6 +9969,17 @@
                 "post_types": {
                     "$ref": "#/definitions/models.PostTypeMap"
                 },
+                "sort_order": {
+                    "description": "SortOrder drives composer/picker ordering (CON-292).",
+                    "type": "integer"
+                },
+                "supported_post_types": {
+                    "description": "SupportedPostTypes is the Zernio-publishable subset of PostTypes' slugs\n(CON-292) — replaces SupportedPlatform.SupportedPostTypes. PostTypes carries\nevery slug for display; this array marks which ones actually publish.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "text_constraints": {
                     "$ref": "#/definitions/models.TextConstraints"
                 },
@@ -10136,6 +9988,10 @@
                 },
                 "video_constraints": {
                     "$ref": "#/definitions/models.VideoConstraints"
+                },
+                "zernio_id": {
+                    "description": "ZernioID is the Zernio wire slug (\"twitter\", \"linkedin\", …). It replaces\nthe retired Go registry's sqidToZernioID map (CON-292): the publish path\nand connect flow resolve this off the row. \"\" means the operator has not\nyet assigned a slug (the row is not publishable until they do).",
+                    "type": "string"
                 }
             }
         },
