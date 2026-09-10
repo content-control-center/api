@@ -4931,6 +4931,63 @@
                 }
             }
         },
+        "/api/posts/thread/preview": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Splits a single authored body into thread segments (manual \"---\"\ndelimiters, else auto-split by the platform's per-segment limit)\nand validates them exactly as the publish gate will. Stateless.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts"
+                ],
+                "summary": "Preview a thread split",
+                "parameters": [
+                    {
+                        "description": "Body + target platform",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.previewThreadRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.previewThreadResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/posts/{id}": {
             "get": {
                 "security": [
@@ -9101,7 +9158,7 @@
                     "type": "string"
                 },
                 "thread_segments": {
-                    "description": "ThreadSegments (CON-284) is the ordered message list for a thread post\n(platform_post_type == \"thread\"): index 0 is the root, 1..N-1 the ordered\nreplies. A plain full-replace field — a present array replaces the stored\nsegments, an omitted/empty [] means \"not a thread\". It needs no CON-233\npresence-aware carve-out: per-segment media rides the attachments endpoint\n(via segment_index), so a whole-record save has nothing to race. When\nnon-empty, apply restamps Content from index 0 (the root mirror).",
+                    "description": "ThreadSegments (CON-284) is DERIVED, not authored (R2): a thread is written\nas a single body in Content (with \"---\" delimiter lines, or auto-split by the\nper-segment char limit), and the server materialises the segment list from it.\nA client-sent value here is IGNORED — the field is retained only so existing\ncallers that still send it don't error, and GET responses carry the derived\nlist back on the Post model (not this request type).",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.ThreadSegment"
@@ -9146,6 +9203,51 @@
                 },
                 "upload_url": {
                     "type": "string"
+                }
+            }
+        },
+        "handlers.previewSegment": {
+            "type": "object",
+            "properties": {
+                "char_count": {
+                    "type": "integer"
+                },
+                "content": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.previewThreadRequest": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "platform_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.previewThreadResponse": {
+            "type": "object",
+            "properties": {
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/platforms.ValidationError"
+                    }
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "segments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.previewSegment"
+                    }
+                },
+                "valid": {
+                    "type": "boolean"
                 }
             }
         },
